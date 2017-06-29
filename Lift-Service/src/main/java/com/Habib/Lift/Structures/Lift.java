@@ -14,7 +14,6 @@ import java.util.PriorityQueue;
  */
 public class Lift {
 	private String id;
-	private PriorityQueue<Floor> serviceQueue;
 	private Floor currentFloor;
 	private ControlPanel controlPanel;
 	private double capacity, currentLoad;
@@ -26,35 +25,11 @@ public class Lift {
 		this.controlPanel = null;
 		this.doorOpen = true;
 		this.currentLoad = 0.0;
-		this.serviceQueue = new PriorityQueue<Floor>(new PriorityComparator<Floor>());
-	}
-
-	public void addFloorToService(Floor floorToAdd) {
-		if (!serviceQueue.contains(floorToAdd)) {
-			int currentFloorLevel = this.currentFloor.getFloorNumber();
-			int liftToAddLevel = floorToAdd.getFloorNumber();
-
-			int priority = Math.abs(currentFloorLevel - liftToAddLevel);
-
-			floorToAdd.setCurrentPriority(priority);
-
-			serviceQueue.add(floorToAdd);
-		}
+		
 	}
 	
 	
-	/**
-	 * 
-	 */
-	public void outputServiceQueue() {
-		Iterator<Floor> queueIter = serviceQueue.iterator();
-
-		while (queueIter.hasNext()) {
-			Floor current = queueIter.next();
-			System.out.println(current.toString());
-		}
-	}
-
+	
 	/**
 	 * @return the currentFloor
 	 */
@@ -120,5 +95,18 @@ public class Lift {
 	public double getCurrentLoad() {
 		return currentLoad;
 	}
+
+
+
+	/* (non-Javadoc)
+	 * @see java.lang.Object#toString()
+	 */
+	@Override
+	public String toString() {
+		return "Lift [id=" + id + ", currentFloor=" + currentFloor + ", capacity=" + capacity + ", currentLoad="
+				+ currentLoad + ", doorOpen=" + doorOpen + "]";
+	}
+	
+	
 
 }

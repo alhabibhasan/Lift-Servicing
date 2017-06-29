@@ -35,6 +35,6 @@ public class Driver {
 		controlPanel.selectFloor(f2);
 		controlPanel.selectFloor(f1);
 		
-		lift.outputServiceQueue();
+		controlPanel.run();
 	}
 }
