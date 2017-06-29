@@ -58,6 +58,7 @@ public class Lift {
 	 */
 	public void setControlPanel(ControlPanel controlPanel) {
 		this.controlPanel = controlPanel;
+		this.setCurrentFloor(controlPanel.getCurrentFloor());
 	}
 
 	/**
@@ -68,11 +69,39 @@ public class Lift {
 	}
 
 	/**
-	 * @param doorOpen
-	 *            the doorOpen to set
+	 * closes the lift door
 	 */
-	public void setDoorOpen(boolean doorOpen) {
-		this.doorOpen = doorOpen;
+	public void closeDoor() {
+		System.out.println("Doors closing");
+		try {
+			Thread.sleep(1000);
+		} catch (InterruptedException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		this.doorOpen = false;
+		controlPanel.run();
+	}
+	
+	/**
+	 * closes the lift door
+	 */
+	public void openDoor() {
+		System.out.println("Doors opening");
+		try {
+			Thread.sleep(1000);
+		} catch (InterruptedException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		this.doorOpen = true;
+		try {
+			Thread.sleep(1000);
+		} catch (InterruptedException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		closeDoor();
 	}
 
 	/**

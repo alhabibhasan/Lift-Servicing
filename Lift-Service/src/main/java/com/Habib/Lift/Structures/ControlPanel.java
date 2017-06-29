@@ -21,7 +21,7 @@ public class ControlPanel {
 		this.floors = new ArrayList<Floor>();
 		this.liftControlling = liftControlling;
 		this.currentFloor = currentFloor;
-		
+
 		this.serviceQueue = new PriorityQueue<Floor>(new PriorityComparator<Floor>());
 	}
 
@@ -37,12 +37,11 @@ public class ControlPanel {
 		return this.floors.size();
 	}
 
-	
 	/**
 	 * @return the currentFloor
 	 */
-	public int getCurrentFloor() {
-		return currentFloor.getFloorNumber();
+	public Floor getCurrentFloor() {
+		return currentFloor;
 	}
 
 	/**
@@ -57,20 +56,20 @@ public class ControlPanel {
 	// to go to.
 
 	public boolean selectFloor(Floor floor) {
-		if (floors.contains(floor) && !floor.isSelected()) {
+		if (floors.contains(floor) && floor.isSelected() == false) {
 			floor.setSelected(true);
 			this.addFloorToService(floor);
 			return true;
 		}
 		return false;
 	}
-	
+
 	/**
 	 * Moves the lift up one level
 	 */
 	public void moveUp() {
 		int currentIndex = floors.indexOf(currentFloor);
-		
+
 		if (currentIndex < floors.size()) {
 			Floor currentFloor = floors.get(currentIndex + 1);
 			try {
@@ -79,20 +78,26 @@ public class ControlPanel {
 				// TODO Auto-generated catch block
 				e.printStackTrace();
 			}
+
 			setCurrentFloor(currentFloor);
 			liftControlling.setCurrentFloor(currentFloor);
-			
-			System.out.println("Movement update: " + liftControlling.toString());
-			
+
+			System.out.println("--------------------------------------------------");
+			System.out.println("Movement update up: " + liftControlling.getId());
+			System.out.println("Current floor priority: " + liftControlling.getCurrentFloor().getCurrentPriority());
+			System.out.println("Current level: " + liftControlling.getCurrentFloor().getFloorNumber());
+			System.out.println("Door is open: " + liftControlling.isDoorOpen());
+			System.out.println("--------------------------------------------------");
+
 		}
 	}
-	
+
 	/**
 	 * Moves the lift down one level
 	 */
 	public void moveDown() {
 		int currentIndex = floors.indexOf(currentFloor);
-		
+
 		if (currentIndex > 0) {
 			Floor currentFloor = floors.get(currentIndex - 1);
 			try {
@@ -101,17 +106,26 @@ public class ControlPanel {
 				// TODO Auto-generated catch block
 				e.printStackTrace();
 			}
+
 			setCurrentFloor(currentFloor);
 			liftControlling.setCurrentFloor(currentFloor);
-			
-			System.out.println("Movement update: " + liftControlling.toString());
+
+			System.out.println("--------------------------------------------------");
+			System.out.println("Movement update down: " + liftControlling.getId());
+			System.out.println("Current floor priority: " + liftControlling.getCurrentFloor().getCurrentPriority());
+			System.out.println("Current level: " + liftControlling.getCurrentFloor().getFloorNumber());
+			System.out.println("Door is open: " + liftControlling.isDoorOpen());
+			System.out.println("--------------------------------------------------");
+
 		}
 	}
-	
 
 	/**
-	 * Adds a floor to the service queue provided that it isn't already part of the queue.
-	 * @param floorToAdd The floor to add
+	 * Adds a floor to the service queue provided that it isn't already part of
+	 * the queue.
+	 * 
+	 * @param floorToAdd
+	 *            The floor to add
 	 */
 	private void addFloorToService(Floor floorToAdd) {
 		if (!serviceQueue.contains(floorToAdd)) {
@@ -125,7 +139,7 @@ public class ControlPanel {
 			serviceQueue.add(floorToAdd);
 		}
 	}
-	
+
 	/**
 	 * Output the service queue as it is now.
 	 */
@@ -139,19 +153,29 @@ public class ControlPanel {
 	}
 
 	public void run() {
+		if (serviceQueue.isEmpty()) {
+			System.out.println("No jobs");
+			System.exit(0);
+		}
+
 		Floor targetFloor = serviceQueue.poll();
-		
+		System.out.println("Target: " + targetFloor);
 		int indexOfTarget = floors.indexOf(targetFloor);
-		
+
 		if (indexOfTarget > currentFloor.getFloorNumber()) {
 			while (indexOfTarget > currentFloor.getFloorNumber()) {
 				moveUp();
-			} 
-		} else {
+			}
+			liftControlling.openDoor();
+		} else if (indexOfTarget < currentFloor.getFloorNumber()) {
 			while (indexOfTarget < currentFloor.getFloorNumber()) {
 				moveDown();
 			}
+			liftControlling.openDoor();
+		} else {
+			System.out.println("Same level");
+			liftControlling.openDoor();
 		}
-		
+
 	}
 }
