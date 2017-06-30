@@ -5,13 +5,16 @@ package com.Habib.Lift.Structures;
 
 import java.util.ArrayList;
 import java.util.Iterator;
+import java.util.Observable;
 import java.util.PriorityQueue;
 
 /**
+ * This class will be used to model the control panel of a lift.
+ * 
  * @author Muhammed Hasan
  *
  */
-public class ControlPanel {
+public class ControlPanel extends Observable {
 	private Lift liftControlling;
 	private PriorityQueue<Floor> serviceQueue;
 	private ArrayList<Floor> floors;
@@ -57,6 +60,7 @@ public class ControlPanel {
 
 	public boolean selectFloor(Floor floor) {
 		if (floors.contains(floor) && floor.isSelected() == false) {
+			// set the floor as being selected
 			floor.setSelected(true);
 			this.addFloorToService(floor);
 			return true;
@@ -71,7 +75,10 @@ public class ControlPanel {
 		int currentIndex = floors.indexOf(currentFloor);
 
 		if (currentIndex < floors.size()) {
+			// set the current floor as the one above
 			Floor currentFloor = floors.get(currentIndex + 1);
+
+			// a pause for a realistic affect
 			try {
 				Thread.sleep(2000);
 			} catch (InterruptedException e) {
@@ -79,6 +86,7 @@ public class ControlPanel {
 				e.printStackTrace();
 			}
 
+			// update the current floor
 			setCurrentFloor(currentFloor);
 			liftControlling.setCurrentFloor(currentFloor);
 
@@ -99,7 +107,10 @@ public class ControlPanel {
 		int currentIndex = floors.indexOf(currentFloor);
 
 		if (currentIndex > 0) {
+			// set the current floor to be the one lower down
 			Floor currentFloor = floors.get(currentIndex - 1);
+
+			// add a little pause for to make it seem more realistic
 			try {
 				Thread.sleep(2000);
 			} catch (InterruptedException e) {
@@ -107,6 +118,7 @@ public class ControlPanel {
 				e.printStackTrace();
 			}
 
+			// update the current floor
 			setCurrentFloor(currentFloor);
 			liftControlling.setCurrentFloor(currentFloor);
 
@@ -128,6 +140,7 @@ public class ControlPanel {
 	 *            The floor to add
 	 */
 	private void addFloorToService(Floor floorToAdd) {
+		// we will only add the floor if it hasn't already been added
 		if (!serviceQueue.contains(floorToAdd)) {
 			int currentFloorLevel = this.currentFloor.getFloorNumber();
 			int liftToAddLevel = floorToAdd.getFloorNumber();
@@ -137,6 +150,10 @@ public class ControlPanel {
 			floorToAdd.setCurrentPriority(priority);
 
 			serviceQueue.add(floorToAdd);
+
+			System.out.println("Floor " + floorToAdd + " added to service queue");
+			setChanged();
+			notifyObservers();
 		}
 	}
 
@@ -152,16 +169,22 @@ public class ControlPanel {
 		}
 	}
 
+	/**
+	 * This method is called to have the lift start.
+	 */
 	public void run() {
+		// check if the lift has been requested
 		if (serviceQueue.isEmpty()) {
 			System.out.println("No jobs");
-			System.exit(0);
+			return;
 		}
 
+		// get the target floor and find the index of the floor in the array
 		Floor targetFloor = serviceQueue.poll();
 		System.out.println("Target: " + targetFloor);
 		int indexOfTarget = floors.indexOf(targetFloor);
 
+		// If the target is above, we will go up, otherwise we will go down.
 		if (indexOfTarget > currentFloor.getFloorNumber()) {
 			while (indexOfTarget > currentFloor.getFloorNumber()) {
 				moveUp();
@@ -174,8 +197,23 @@ public class ControlPanel {
 			liftControlling.openDoor();
 		} else {
 			System.out.println("Same level");
-			liftControlling.openDoor();
+			liftControlling.openDoor();;
 		}
+		
+		setChanged();
+		notifyObservers();
 
+	}
+
+	public void closeDoor() {
+		liftControlling.closeDoor();
+	}
+
+	public void openDoor() {
+		liftControlling.openDoor();
+	}
+
+	public Iterator<Floor> getFloors() {
+		return this.floors.iterator();
 	}
 }

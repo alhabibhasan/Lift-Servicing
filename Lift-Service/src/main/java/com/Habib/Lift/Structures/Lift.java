@@ -3,9 +3,6 @@
  */
 package com.Habib.Lift.Structures;
 
-import java.util.Iterator;
-import java.util.PriorityQueue;
-
 /**
  * This class will be used to model a single lift.
  * 
@@ -25,11 +22,9 @@ public class Lift {
 		this.controlPanel = null;
 		this.doorOpen = true;
 		this.currentLoad = 0.0;
-		
+
 	}
-	
-	
-	
+
 	/**
 	 * @return the currentFloor
 	 */
@@ -76,13 +71,14 @@ public class Lift {
 		try {
 			Thread.sleep(1000);
 		} catch (InterruptedException e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
 		this.doorOpen = false;
+
+		// the lift will only run once the doors have closed.
 		controlPanel.run();
 	}
-	
+
 	/**
 	 * closes the lift door
 	 */
@@ -91,14 +87,12 @@ public class Lift {
 		try {
 			Thread.sleep(1000);
 		} catch (InterruptedException e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
 		this.doorOpen = true;
 		try {
 			Thread.sleep(1000);
 		} catch (InterruptedException e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
 		closeDoor();
@@ -125,9 +119,9 @@ public class Lift {
 		return currentLoad;
 	}
 
-
-
-	/* (non-Javadoc)
+	/*
+	 * (non-Javadoc)
+	 * 
 	 * @see java.lang.Object#toString()
 	 */
 	@Override
@@ -135,7 +129,5 @@ public class Lift {
 		return "Lift [id=" + id + ", currentFloor=" + currentFloor + ", capacity=" + capacity + ", currentLoad="
 				+ currentLoad + ", doorOpen=" + doorOpen + "]";
 	}
-	
-	
 
 }
